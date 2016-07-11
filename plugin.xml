@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
   xmlns:android="http://schemas.android.com/apk/res/android"
-  id="com.oddmouse.plugins.locktask"
+  id="com.wallacy.plugins.locktask"
   version="1.0.0">
   <name>LockTask</name>
   <description>A Cordova plugin that provides access to Android’s screen pinning APIs.</description>
@@ -16,9 +16,18 @@
   <platform name="android">
     <config-file target="res/xml/config.xml" parent="/*">
       <feature name="LockTask">
-        <param name="android-package" value="com.oddmouse.plugins.LockTask" />
+        <param name="android-package" value="com.wallacy.plugins.LockTask" />
       </feature>
     </config-file>
-    <source-file src="src/android/com/oddmouse/plugins/LockTask.java" target-dir="src/com/oddmouse/plugins"/>
+    <config-file target="AndroidManifest.xml" parent="/manifest/application">
+      <receiver android:label="@string/app_name" android:name=".AdminReceiver" android:permission="android.permission.BIND_DEVICE_ADMIN">
+        <meta-data android:name="android.app.device_admin" android:resource="@xml/device_admin" />
+        <intent-filter>
+          <action android:name="android.app.action.DEVICE_ADMIN_ENABLED" />
+        </intent-filter>
+      </receiver>
+    </config-file>
+    <source-file src="src/android/com/wallacy/plugins/LockTask.java" target-dir="src/com/wallacy/plugins"/>
+    <source-file src="src/android/com/wallacy/plugins/AdminReceiver.java" target-dir="src/com/wallacy/plugins"/>
   </platform>
 </plugin>
