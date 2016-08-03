@@ -5,7 +5,7 @@ import android.app.ActivityManager;
 import android.app.admin.DevicePolicyManager;
 import android.content.ComponentName;
 import android.content.Context;
-
+import android.content.Intent;
 import org.apache.cordova.CordovaPlugin;
 import org.apache.cordova.CallbackContext;
 import org.json.JSONArray;
@@ -34,17 +34,20 @@ public class LockTask extends CordovaPlugin {
 
         if (!activityManager.isInLockTaskMode()) {
 
-          if (!adminClassName.isEmpty()) {
+        DevicePolicyManager mDPM = (DevicePolicyManager) activity.getSystemService(Context.DEVICE_POLICY_SERVICE);
+        ComponentName mDeviceAdmin = new ComponentName(activity.getPackageName(), AdminReceiver.class.getName());
 
-            DevicePolicyManager mDPM = (DevicePolicyManager) activity.getSystemService(Context.DEVICE_POLICY_SERVICE);
-            ComponentName mDeviceAdmin = new ComponentName(activity.getPackageName(), activity.getPackageName() + "." + adminClassName);
+         if (!mDPM.isDeviceOwnerApp(activity.getPackageName())) {
+            Intent intent = new Intent(DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN);
+            intent.putExtra(DevicePolicyManager.EXTRA_DEVICE_ADMIN, mDeviceAdmin);
+            intent.putExtra(DevicePolicyManager.EXTRA_ADD_EXPLANATION, "Your boss told you to do this");
+            activity.startActivity(intent);
+         }
 
-            if (mDPM.isDeviceOwnerApp(activity.getPackageName())) {
-              String[] packages = {activity.getPackageName()};
-              mDPM.setLockTaskPackages(mDeviceAdmin, packages);
-            }
-
-          }
+        if (mDPM.isDeviceOwnerApp(activity.getPackageName())) {
+          String[] packages = {activity.getPackageName()};
+          mDPM.setLockTaskPackages(mDeviceAdmin, packages);
+        }
 
           activity.startLockTask();
         }
